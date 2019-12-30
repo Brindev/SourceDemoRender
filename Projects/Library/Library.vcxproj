@@ -80,7 +80,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SDR_MINHOOK_LIBRARY);$(SDR_FFMPEG_LIBRARY);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>D3D11.lib;Shlwapi.lib;libx264.lib;libavutil.a;libavcodec.a;libavformat.a;libMinHook.x86.lib;Bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3D11.lib;Shlwapi.lib;avutil.lib;avcodec.lib;avformat.lib;libMinHook.x86.lib;Bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
@@ -107,7 +107,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SDR_MINHOOK_LIBRARY);$(SDR_FFMPEG_LIBRARY);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>D3D11.lib;Shlwapi.lib;libx264.lib;libavutil.a;libavcodec.a;libavformat.a;libMinHook.x86.lib;Bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3D11.lib;Shlwapi.lib;avutil.lib;avcodec.lib;avformat.lib;libMinHook.x86.lib;Bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
