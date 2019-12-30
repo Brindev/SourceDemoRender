@@ -769,7 +769,7 @@ namespace
 
 				else
 				{
-					av_log_set_level(AV_LOG_INFO);
+					av_log_set_level(AV_LOG_TRACE);
 					av_log_set_callback(LAVLogFunction);
 				}
 
