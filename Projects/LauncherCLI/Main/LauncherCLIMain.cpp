@@ -657,6 +657,9 @@ namespace
 	{
 		decltype(LoadLibraryA)* LoadLibraryAddr;
 		decltype(GetProcAddress)* GetProcAddressAddr;
+		decltype(GetLastError)* GetLastErrorAddr;
+		decltype(Sleep)* SleepAddr;
+		decltype(SetCurrentDirectoryA)* SetCurrentDirectoryAddr;
 
 		const char* LibraryNameAddr;
 		const char* ExportNameAddr;
@@ -673,10 +676,44 @@ namespace
 	*/
 	VOID CALLBACK ProcessAPC(ULONG_PTR param)
 	{
+		auto crash = []()
+		{
+			int* ptr = nullptr;
+			*ptr = 5;
+		};
+
 		auto data = (InterProcessData*)param;
 
+		/*
+			Change the directory to correctly resolve the library dependencies.
+		*/
+		data->SetCurrentDirectoryAddr(data->ResourcePathAddr);
+
 		auto module = data->LoadLibraryAddr(data->LibraryNameAddr);
+
+		if (module == nullptr)
+		{
+			/*
+				Not actually a useful sleep, but used to
+				save the error code so stuff can be debugged.
+				Most of the time anyway if there's any error it will just be 126
+				which is a completely useless code.
+			*/
+			auto code = data->GetLastErrorAddr();
+			data->SleepAddr(code);
+
+			crash();
+		}
+
 		auto func = (SDR::Library::SDR_Initialize)data->GetProcAddressAddr(module, data->ExportNameAddr);
+
+		if (func == nullptr)
+		{
+			auto code = data->GetLastErrorAddr();
+			data->SleepAddr(code);
+
+			crash();
+		}
 
 		SDR::Library::InitializeData initdata;
 		initdata.ResourcePath = data->ResourcePathAddr;
@@ -701,23 +738,50 @@ namespace
 			0x83, 0xec, 0x0c,
 			0x56,
 			0x8b, 0x75, 0x08,
-			0xff, 0x76, 0x08,
+			0x57,
+			0xff, 0x76, 0x1c,
+			0x8b, 0x46, 0x10,
+			0xff, 0xd0,
+			0xff, 0x76, 0x14,
 			0x8b, 0x06,
 			0xff, 0xd0,
-			0xff, 0x76, 0x0c,
+			0x8b, 0xf8,
+			0x85, 0xff,
+			0x75, 0x13,
+			0x8b, 0x4e, 0x08,
+			0xff, 0xd1,
+			0x8b, 0x4e, 0x0c,
 			0x50,
+			0xff, 0xd1,
+			0x33, 0xc0,
+			0xc7, 0x00, 0x05, 0x00, 0x00,
+			0x00,
+			0xff, 0x76, 0x18,
 			0x8b, 0x46, 0x04,
+			0x57,
 			0xff, 0xd0,
-			0x8b, 0x4e, 0x10,
-			0x89, 0x4d, 0xf4,
-			0x8b, 0x4e, 0x14,
-			0x89, 0x4d, 0xf8,
-			0x8b, 0x4e, 0x18,
-			0x89, 0x4d, 0xfc,
-			0x8d, 0x4d, 0xf4,
-			0x51,
-			0xff, 0xd0,
+			0x8b, 0xf8,
+			0x85, 0xff,
+			0x75, 0x13,
+			0x8b, 0x4e, 0x08,
+			0xff, 0xd1,
+			0x8b, 0x4e, 0x0c,
+			0x50,
+			0xff, 0xd1,
+			0x33, 0xc0,
+			0xc7, 0x00, 0x05, 0x00, 0x00,
+			0x00,
+			0x8b, 0x46, 0x1c,
+			0x89, 0x45, 0xf4,
+			0x8b, 0x46, 0x20,
+			0x89, 0x45, 0xf8,
+			0x8b, 0x46, 0x24,
+			0x89, 0x45, 0xfc,
+			0x8d, 0x45, 0xf4,
+			0x50,
+			0xff, 0xd7,
 			0x83, 0xc4, 0x04,
+			0x5f,
 			0x5e,
 			0x8b, 0xe5,
 			0x5d,
@@ -736,11 +800,16 @@ namespace
 		*/
 		data.LoadLibraryAddr = LoadLibraryA;
 		data.GetProcAddressAddr = GetProcAddress;
+		data.GetLastErrorAddr = GetLastError;
+		data.SleepAddr = Sleep;
+		data.SetCurrentDirectoryAddr = SetCurrentDirectoryA;
+
+		auto resourcepathw = SDR::String::FromUTF8(resourcepath);
 
 		/*
 			All referenced strings must be allocated in the other process too.
 		*/
-		data.LibraryNameAddr = writer.PushString(resourcepath + Local::LibraryName);
+		data.LibraryNameAddr = writer.PushString(Local::LibraryName);
 		data.ExportNameAddr = writer.PushString(Local::InitializeExportName);
 		data.ResourcePathAddr = writer.PushString(resourcepath);
 		data.GamePathAddr = writer.PushString(gamepath);
@@ -901,6 +970,9 @@ namespace
 		InterProcessData data;
 		data.LoadLibraryAddr = LoadLibraryA;
 		data.GetProcAddressAddr = GetProcAddress;
+		data.GetLastErrorAddr = GetLastError;
+		data.SleepAddr = Sleep;
+		data.SetCurrentDirectoryAddr = SetCurrentDirectoryA;
 
 		data.LibraryNameAddr = Local::LibraryName;
 		data.ExportNameAddr = Local::InitializeExportName;
