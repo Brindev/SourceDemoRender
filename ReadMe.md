@@ -72,25 +72,17 @@ The launcher has a feature to manage all your extensions. In this window you can
 ![Launcher uI Extensions Window 1](https://raw.githubusercontent.com/crashfort/SourceDemoRender/master/Media/Launcher%20UI/ExtensionsWindow.png)
 
 ### Preview Window
-**Availability:** Free, included
-
 This extension will open up a new window which will display how everything looks like at its load order in the video file but in realtime. The window can be resized and the content will remain at its aspect ratio.
 
 ### Velocity Text
-**Availability:** Contact me
-
 This extension will gather the current player velocity and display it in a highly customizable format.
 
 ![Velocity Text Image 1](https://raw.githubusercontent.com/crashfort/SourceDemoRender/master/Media/Extensions/VelocityText1.png)
 
 ### Direct2D Context
-**Availability:** Free, included
-
 This extension creates a rendering context that all other extensions can use without having to recreate it all the time.
 
 ### Multi Process
-**Availability:** Contact me
-
 This extension will allow you to render with multiple instances of SDR for parallel video creation.
 
 ## General commands
@@ -380,8 +372,3 @@ The X axis is the multiplication and the Y axis is the exposure.
 		</tr>
 	</tbody>
 </table>
-
-## How to build
-The dependencies that cannot be automatically downloaded are outlined in ``SourceDemoRender/Property Sheet/PropertySheet.props``. You can edit this file manually or through Visual Studio in **View -> Property Manager**. The links for each of these projects is available at [Open Source Licenses](https://github.com/crashfort/SourceDemoRender/tree/master/Open%20Source%20Licenses). The NuGet package manager should handle the rest.
-
-Prebuilt V140 libraries can be found here [FFmpeg V140 Static](https://crashfort.github.io/Files/SDR/FFmpeg%20V140%20Static.7z).
